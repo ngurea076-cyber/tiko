@@ -24,7 +24,7 @@ serve(async (req) => {
       throw new Error("Invalid phone format. Use 2547XXXXXXXX or 2541XXXXXXXX");
     }
 
-    const ticketPrice = 1;
+    const ticketPrice = 7500;
     const totalAmount = ticketPrice * quantity;
     const ticketId = crypto.randomUUID().split("-")[0].toUpperCase();
     const qrCode = crypto.randomUUID();

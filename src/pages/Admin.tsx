@@ -8,11 +8,12 @@ import {
   Search,
   Download,
   RefreshCw,
-  LogOut,
   ChevronLeft,
   ChevronRight,
   Send,
   Loader2,
+  MapPin,
+  LogOut,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -364,7 +365,7 @@ const AdminPage = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center px-4">
+      <div className="min-h-screen gradient-bg flex flex-col items-center justify-center px-4">
         <motion.form
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -398,6 +399,14 @@ const AdminPage = () => {
             Sign In
           </button>
         </motion.form>
+        <a
+          href="https://www.google.com/maps/place/Radisson+Blu+Hotel,+Nairobi+Upper+Hill/@-1.3015887,36.8173125,16z/data=!4m9!3m8!1s0x182f10e51817c5bd:0x3a9709be7741fa63!5m2!4m1!1i2!8m2!3d-1.3022805!4d36.8167439!16s%2Fg%2F11b6jddqjw?entry=ttu&g_ep=EgoyMDI2MDIwNC4wIKXMDSoKLDEwMDc5MjA2N0gBUAM%3D"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-primary no-glow text-sm flex items-center gap-2 mt-4"
+        >
+          <MapPin className="w-4 h-4" /> Get Directions
+        </a>
       </div>
     );
   }
@@ -414,43 +423,23 @@ const AdminPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-secondary">
-      <header className="bg-card border-b border-border px-6 py-4 flex items-center justify-between sticky top-0 z-20">
-        <h1 className="font-display text-xl font-bold text-primary">
-          Womens Day Dinner Admin
-        </h1>
-        <div className="flex gap-3">
-          <button
-            onClick={() => navigate("/")}
-            className="text-sm text-muted-foreground hover:text-card-foreground transition-colors"
-          >
-            View Site
-          </button>
-          <button
-            onClick={() => setIsLoggedIn(false)}
-            className="text-sm text-destructive hover:text-destructive/80 transition-colors flex items-center gap-1"
-          >
-            <LogOut className="w-4 h-4" /> Logout
-          </button>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-secondary pt-16">
       <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
           {statCards.map((s, i) => (
             <motion.div
               key={s.label}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="admin-card flex items-center gap-4"
+              className="admin-card flex items-center gap-2 p-3"
             >
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <s.icon className="w-6 h-6 text-primary" />
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <s.icon className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground/70">{s.label}</p>
-                <p className="text-xl font-bold text-card-foreground">
+                <p className="text-xs text-muted-foreground/70">{s.label}</p>
+                <p className="text-sm font-bold text-card-foreground">
                   {s.value}
                 </p>
               </div>
@@ -458,18 +447,18 @@ const AdminPage = () => {
           ))}
         </div>
 
-        <div className="admin-card mb-6">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+        <div className="admin-card mb-6 p-3">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="relative flex-1 min-w-0">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
               <input
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                placeholder="Search orders..."
-                className="input-field pl-10"
+                placeholder="Search..."
+                className="input-field pl-8 py-2 text-sm"
               />
             </div>
             <select
@@ -478,35 +467,31 @@ const AdminPage = () => {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="input-field sm:w-40"
+              className="input-field py-2 text-sm"
             >
-              <option value="all">All Status</option>
+              <option value="all">All</option>
               <option value="paid">Paid</option>
               <option value="pending">Pending</option>
               <option value="failed">Failed</option>
             </select>
             <button
               onClick={exportCSV}
-              className="btn-primary no-glow flex items-center gap-2 text-sm py-3"
+              className="btn-primary no-glow flex items-center gap-1 text-xs py-2"
             >
-              <Download className="w-4 h-4" /> Export CSV
+              <Download className="w-3 h-3" /> Export
             </button>
-            {/* <button onClick={() => setScannerOpen(true)} className="btn-primary no-glow flex items-center gap-2 text-sm py-3">
-              Scan QR
-            </button> */}
             <button
               onClick={() => setScannerOpen(true)}
-              className="btn-primary no-glow flex items-center gap-2 text-sm py-3"
+              className="btn-primary no-glow flex items-center gap-1 text-xs py-2"
             >
-              Verify Ticket ID
+              Verify
             </button>
             <button
               onClick={fetchOrders}
-              className="btn-primary no-glow flex items-center gap-2 text-sm py-3"
+              className="btn-primary no-glow flex items-center gap-1 text-xs py-2"
               aria-label="Refresh"
             >
-              <RefreshCw className="w-4 h-4" />
-              Refresh
+              <RefreshCw className="w-3 h-3" />
             </button>
           </div>
         </div>
