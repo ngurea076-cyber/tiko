@@ -12,7 +12,6 @@ import {
   ChevronRight,
   Send,
   Loader2,
-  MapPin,
   LogOut,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -399,14 +398,6 @@ const AdminPage = () => {
             Sign In
           </button>
         </motion.form>
-        <a
-          href="https://www.google.com/maps/place/Radisson+Blu+Hotel,+Nairobi+Upper+Hill/@-1.3015887,36.8173125,16z/data=!4m9!3m8!1s0x182f10e51817c5bd:0x3a9709be7741fa63!5m2!4m1!1i2!8m2!3d-1.3022805!4d36.8167439!16s%2Fg%2F11b6jddqjw?entry=ttu&g_ep=EgoyMDI2MDIwNC4wIKXMDSoKLDEwMDc5MjA2N0gBUAM%3D"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-primary no-glow text-sm flex items-center gap-2 mt-4"
-        >
-          <MapPin className="w-4 h-4" /> Get Directions
-        </a>
       </div>
     );
   }
@@ -447,7 +438,7 @@ const AdminPage = () => {
           ))}
         </div>
 
-        <div className="admin-card mb-6 p-3">
+        <div className="admin-card mb-6 p-2">
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1 min-w-0">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
@@ -458,41 +449,43 @@ const AdminPage = () => {
                   setPage(1);
                 }}
                 placeholder="Search..."
-                className="input-field pl-8 py-2 text-sm"
+                className="input-field pl-8 py-1.5 text-sm w-full"
               />
             </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPage(1);
-              }}
-              className="input-field py-2 text-sm"
-            >
-              <option value="all">All</option>
-              <option value="paid">Paid</option>
-              <option value="pending">Pending</option>
-              <option value="failed">Failed</option>
-            </select>
-            <button
-              onClick={exportCSV}
-              className="btn-primary no-glow flex items-center gap-1 text-xs py-2"
-            >
-              <Download className="w-3 h-3" /> Export
-            </button>
-            <button
-              onClick={() => setScannerOpen(true)}
-              className="btn-primary no-glow flex items-center gap-1 text-xs py-2"
-            >
-              Verify
-            </button>
-            <button
-              onClick={fetchOrders}
-              className="btn-primary no-glow flex items-center gap-1 text-xs py-2"
-              aria-label="Refresh"
-            >
-              <RefreshCw className="w-3 h-3" />
-            </button>
+            <div className="flex gap-1 flex-shrink-0">
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="input-field py-1.5 px-2 text-xs w-20"
+              >
+                <option value="all">All</option>
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
+                <option value="failed">Failed</option>
+              </select>
+              <button
+                onClick={exportCSV}
+                className="btn-primary no-glow flex items-center gap-1 text-xs py-1.5 px-2"
+              >
+                <Download className="w-3 h-3" /> Export CSV
+              </button>
+              <button
+                onClick={() => setScannerOpen(true)}
+                className="btn-primary no-glow flex items-center gap-1 text-xs py-1.5 px-2"
+              >
+                Verify
+              </button>
+              <button
+                onClick={fetchOrders}
+                className="btn-primary no-glow flex items-center justify-center text-xs py-1.5 px-2"
+                aria-label="Refresh"
+              >
+                <RefreshCw className="w-3 h-3" />
+              </button>
+            </div>
           </div>
         </div>
 
