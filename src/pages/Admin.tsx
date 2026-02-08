@@ -76,6 +76,14 @@ const AdminPage = () => {
   };
   // Scan/mark using ticket ID value instead of QR
   const handleScanByTicketId = async (ticketId: string) => {
+    if (!ticketId?.trim()) {
+      toast({
+        title: "Missing ticket ID",
+        description: "Please enter a ticket ID to verify",
+        variant: "destructive",
+      });
+      return;
+    }
     try {
       const check = await supabase.functions.invoke("verify-qr", {
         body: { ticketId },
@@ -98,7 +106,8 @@ const AdminPage = () => {
         toast({
           title: "Ticket already scanned",
           description: `Scanned at: ${info.scannedAt || "unknown"}`,
-          variant: "destructive",
+          variant: "default",
+          className: "bg-yellow-100 text-yellow-800 border-yellow-300",
         });
         fetchOrders();
         return;
@@ -118,7 +127,12 @@ const AdminPage = () => {
           });
           return;
         }
-        toast({ title: "Verified", description: "Ticket marked as scanned" });
+        toast({
+          title: "Ticket valid ✓",
+          description: "First-time scan completed",
+          variant: "default",
+          className: "bg-green-100 text-green-800 border-green-300",
+        });
         if (m.ticket) setScannedTicket(m.ticket);
         fetchOrders();
         return;
@@ -151,12 +165,18 @@ const AdminPage = () => {
       } else {
         if (data.status === "already_scanned") {
           toast({
-            title: "Already scanned",
+            title: "Ticket already scanned",
             description: `Scanned at: ${data.scannedAt || "unknown"}`,
-            variant: "destructive",
+            variant: "default",
+            className: "bg-yellow-100 text-yellow-800 border-yellow-300",
           });
         } else {
-          toast({ title: "Scanned", description: "Ticket marked as scanned" });
+          toast({
+            title: "Ticket valid ✓",
+            description: "First-time scan completed",
+            variant: "default",
+            className: "bg-green-100 text-green-800 border-green-300",
+          });
         }
         fetchOrders();
         setScannerOpen(false);
@@ -197,7 +217,8 @@ const AdminPage = () => {
         toast({
           title: "Ticket already scanned",
           description: `Scanned at: ${info.scannedAt || "unknown"}`,
-          variant: "destructive",
+          variant: "default",
+          className: "bg-yellow-100 text-yellow-800 border-yellow-300",
         });
         fetchOrders();
         return;
@@ -218,7 +239,12 @@ const AdminPage = () => {
           });
           return;
         }
-        toast({ title: "Verified", description: "Ticket marked as scanned" });
+        toast({
+          title: "Ticket valid ✓",
+          description: "First-time scan completed",
+          variant: "default",
+          className: "bg-green-100 text-green-800 border-green-300",
+        });
         if (m.ticket) setScannedTicket(m.ticket);
         fetchOrders();
         return;
@@ -291,9 +317,9 @@ const AdminPage = () => {
     return orders.filter((o) => {
       const matchesSearch =
         !search ||
-        o.full_name.toLowerCase().includes(search.toLowerCase()) ||
-        o.ticket_id.toLowerCase().includes(search.toLowerCase()) ||
-        o.email.toLowerCase().includes(search.toLowerCase());
+        (o.full_name?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+        (o.ticket_id?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+        (o.email?.toLowerCase().includes(search.toLowerCase()) ?? false);
       const matchesStatus =
         statusFilter === "all" || o.payment_status === statusFilter;
       return matchesSearch && matchesStatus;
@@ -645,8 +671,8 @@ const AdminPage = () => {
 
               {!scannedTicket ? (
                 <>
-                  {/* QR Scanner temporarily commented out due to CORS issues */}
-                  {/* <Suspense
+                  {/* QR Scanner */}
+                  <Suspense
                     fallback={
                       <div className="py-10 text-center">
                         Loading scanner...
@@ -659,11 +685,11 @@ const AdminPage = () => {
                       }}
                       onClose={() => setScannerOpen(false)}
                     />
-                  </Suspense> */}
+                  </Suspense>
 
-                  <div className="mt-4">
+                  <div className="mt-4 border-t pt-4">
                     <p className="text-sm text-muted-foreground mb-2">
-                      Enter Ticket ID to verify and mark attendance
+                      Or enter Ticket ID manually
                     </p>
                     <div className="flex gap-2">
                       <input
