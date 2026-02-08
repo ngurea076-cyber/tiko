@@ -14,7 +14,7 @@ const ticketSchema = z.object({
   email: z.string().trim().email("Invalid email address").max(255),
   phone: z
     .string()
-    .regex(/^254[17]\d{8}$/, "Phone format: 2547XXXXXXXX or 2541XXXXXXXX"),
+    .regex(/^0[17]\d{8}$/, "Phone format: 07XXXXXXXX or 01XXXXXXXX"),
   quantity: z.number().min(1, "Minimum 1 ticket").max(10, "Maximum 10 tickets"),
 });
 
@@ -50,13 +50,24 @@ const TicketSection = ({
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]:
-        name === "quantity"
-          ? Math.max(1, Math.min(10, parseInt(value) || 1))
-          : value,
+      [name]: value,
     }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
     setApiError("");
+  };
+
+  const incrementQuantity = () => {
+    setForm((prev) => ({
+      ...prev,
+      quantity: Math.min(10, prev.quantity + 1),
+    }));
+  };
+
+  const decrementQuantity = () => {
+    setForm((prev) => ({
+      ...prev,
+      quantity: Math.max(1, prev.quantity - 1),
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,11 +87,19 @@ const TicketSection = ({
     setApiError("");
 
     try {
+      // Convert phone number format: 07XXX -> 2547XXX, 01XXX -> 2541XXX
+      let formattedPhone = form.phone;
+      if (formattedPhone.startsWith("07")) {
+        formattedPhone = "254" + formattedPhone.substring(1);
+      } else if (formattedPhone.startsWith("01")) {
+        formattedPhone = "254" + formattedPhone.substring(1);
+      }
+
       const { data, error } = await supabase.functions.invoke("create-order", {
         body: {
           fullName: form.fullName,
           email: form.email,
-          phone: form.phone,
+          phone: formattedPhone,
           quantity: form.quantity,
         },
       });
@@ -180,7 +199,7 @@ const TicketSection = ({
             name="phone"
             value={form.phone}
             onChange={handleChange}
-            placeholder="2547XXXXXXXX or 2541XXXXXXXX"
+            placeholder="07XXXXXXXX or 01XXXXXXXX"
             className="input-field"
             required
           />
@@ -193,18 +212,27 @@ const TicketSection = ({
           <label className="block text-sm font-medium text-card-foreground mb-1.5">
             Quantity
           </label>
-          <input
-            name="quantity"
-            type="number"
-            min={1}
-            max={10}
-            value={form.quantity}
-            onChange={handleChange}
-            className="input-field"
-          />
-          {errors.quantity && (
-            <p className="text-destructive text-sm mt-1">{errors.quantity}</p>
-          )}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={decrementQuantity}
+              disabled={form.quantity <= 1}
+              className="w-10 h-10 rounded-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center text-lg font-medium disabled:opacity-50 transition-colors"
+            >
+              -
+            </button>
+            <span className="w-12 text-center text-lg font-bold">
+              {form.quantity}
+            </span>
+            <button
+              type="button"
+              onClick={incrementQuantity}
+              disabled={form.quantity >= 10}
+              className="w-10 h-10 rounded-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center text-lg font-medium disabled:opacity-50 transition-colors"
+            >
+              +
+            </button>
+          </div>
         </div>
 
         <div className="pt-4 border-t border-border">

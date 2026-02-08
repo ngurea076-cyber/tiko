@@ -20,8 +20,12 @@ serve(async (req) => {
       throw new Error("Missing required fields");
     }
 
-    if (!/^254[17]\d{8}$/.test(phone)) {
-      throw new Error("Invalid phone format. Use 2547XXXXXXXX or 2541XXXXXXXX");
+    // Accept both formats: 07XXXXXXXX or 01XXXXXXXX (10 digits) or 254XXXXXXXXX (12 digits)
+    let formattedPhone = phone;
+    if (/^0[17]\d{8}$/.test(phone)) {
+      formattedPhone = "254" + phone.substring(1);
+    } else if (!/^254[17]\d{8}$/.test(phone)) {
+      throw new Error("Invalid phone format. Use 07XXXXXXXX or 01XXXXXXXX");
     }
 
     const ticketPrice = 7500;
