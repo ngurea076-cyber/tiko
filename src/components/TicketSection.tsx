@@ -20,7 +20,7 @@ const ticketSchema = z.object({
 
 type TicketFormData = z.infer<typeof ticketSchema>;
 
-const TICKET_PRICE = 7500;
+const TICKET_PRICE = 6000;
 
 type TicketSectionProps = {
   compact?: boolean;

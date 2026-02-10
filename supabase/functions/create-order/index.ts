@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+uld oimport { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -28,7 +28,7 @@ serve(async (req) => {
       throw new Error("Invalid phone format. Use 07XXXXXXXX or 01XXXXXXXX");
     }
 
-    const ticketPrice = 7500;
+    const ticketPrice = 6000;
     const totalAmount = ticketPrice * quantity;
     const ticketId = crypto.randomUUID().split("-")[0].toUpperCase();
     const qrCode = crypto.randomUUID();
