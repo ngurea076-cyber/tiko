@@ -16,6 +16,10 @@ const ticketSchema = z.object({
     .string()
     .regex(/^0[17]\d{8}$/, "Phone format: 07XXXXXXXX or 01XXXXXXXX"),
   quantity: z.number().min(1, "Minimum 1 ticket").max(10, "Maximum 10 tickets"),
+  pictureConsent: z.enum(["yes", "no"], {
+    required_error: "Please select an option",
+    invalid_type_error: "Please select an option",
+  }),
 });
 
 type TicketFormData = z.infer<typeof ticketSchema>;
@@ -39,6 +43,7 @@ const TicketSection = ({
     email: "",
     phone: "",
     quantity: 1,
+    pictureConsent: "yes" as const,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -95,12 +100,15 @@ const TicketSection = ({
         formattedPhone = "254" + formattedPhone.substring(1);
       }
 
+      console.log("Submitting form with pictureConsent:", form.pictureConsent);
+
       const { data, error } = await supabase.functions.invoke("create-order", {
         body: {
           fullName: form.fullName,
           email: form.email,
           phone: formattedPhone,
           quantity: form.quantity,
+          pictureConsent: form.pictureConsent,
         },
       });
 
@@ -241,6 +249,40 @@ const TicketSection = ({
             <span className="text-2xl font-bold text-primary">
               KES {total.toLocaleString()}
             </span>
+          </div>
+        </div>
+
+        <div className="pt-4 border-t border-border">
+          <label className="block text-sm font-medium text-card-foreground mb-2">
+            Do we have your consent to use your photo on our site?
+          </label>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="pictureConsent"
+                value="yes"
+                checked={form.pictureConsent === "yes"}
+                onChange={() =>
+                  setForm((prev) => ({ ...prev, pictureConsent: "yes" }))
+                }
+                className="w-4 h-4 text-primary accent-primary"
+              />
+              <span className="text-card-foreground">Yes</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="pictureConsent"
+                value="no"
+                checked={form.pictureConsent === "no"}
+                onChange={() =>
+                  setForm((prev) => ({ ...prev, pictureConsent: "no" }))
+                }
+                className="w-4 h-4 text-primary accent-primary"
+              />
+              <span className="text-card-foreground">No</span>
+            </label>
           </div>
         </div>
 

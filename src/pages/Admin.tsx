@@ -33,6 +33,7 @@ interface Order {
   qr_code?: string | null;
   scanned?: boolean;
   scanned_at?: string | null;
+  picture_consent?: string;
 }
 
 const statusColors: Record<string, string> = {
@@ -349,11 +350,12 @@ const AdminPage = () => {
   };
 
   const exportCSV = () => {
-    const header = "Ticket ID,Name,Email,Phone,Type,Qty,Amount,Status,Date\n";
+    const header =
+      "Ticket ID,Name,Email,Phone,Type,Qty,Amount,Status,Picture Consent,Date\n";
     const rows = filtered
       .map(
         (o) =>
-          `${o.ticket_id},${o.full_name},${o.email},${o.phone},${o.ticket_type},${o.quantity},${o.total_amount},${o.payment_status},${o.created_at}`,
+          `${o.ticket_id},${o.full_name},${o.email},${o.phone},${o.ticket_type},${o.quantity},${o.total_amount},${o.payment_status},${o.picture_consent || "no"},${o.created_at}`,
       )
       .join("\n");
     const blob = new Blob([header + rows], { type: "text/csv" });
@@ -532,6 +534,7 @@ const AdminPage = () => {
                     "Qty",
                     "Amount",
                     "Status",
+                    "Consent",
                     "Date",
                     "Actions",
                   ].map((h) => (
@@ -548,7 +551,7 @@ const AdminPage = () => {
                 {paginated.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={9}
+                      colSpan={10}
                       className="py-10 text-center text-muted-foreground"
                     >
                       No orders found
@@ -583,6 +586,13 @@ const AdminPage = () => {
                           className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${statusColors[o.payment_status] || ""}`}
                         >
                           {o.payment_status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium ${o.picture_consent === "yes" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
+                        >
+                          {o.picture_consent === "yes" ? "Yes" : "No"}
                         </span>
                       </td>
                       <td className="py-3 px-3 text-muted-foreground/80 text-xs">

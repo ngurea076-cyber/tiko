@@ -1,4 +1,4 @@
-uld oimport { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -13,12 +13,31 @@ serve(async (req) => {
   }
 
   try {
-    const { fullName, email, phone, quantity } = await req.json();
+    const { fullName, email, phone, quantity, pictureConsent } =
+      await req.json();
 
     // Validate inputs
     if (!fullName || !email || !phone || !quantity) {
       throw new Error("Missing required fields");
     }
+
+    console.log(
+      "Received pictureConsent:",
+      pictureConsent,
+      "Type:",
+      typeof pictureConsent,
+    );
+
+    // Default to 'yes' if not provided
+    let consent = "yes";
+    if (pictureConsent === "no") {
+      consent = "no";
+    } else if (pictureConsent === "yes") {
+      consent = "yes";
+    } else if (pictureConsent === undefined || pictureConsent === null) {
+      consent = "yes";
+    }
+    console.log("Final consent value:", consent);
 
     // Accept both formats: 07XXXXXXXX or 01XXXXXXXX (10 digits) or 254XXXXXXXXX (12 digits)
     let formattedPhone = phone;
@@ -35,7 +54,7 @@ serve(async (req) => {
     const reference = `WDD-${ticketId}`;
 
     console.log(
-      `Creating order: ${ticketId} for ${fullName}, amount: ${totalAmount}`,
+      `Creating order: ${ticketId} for ${fullName}, amount: ${totalAmount}, consent: ${consent}`,
     );
 
     // Create Supabase client with service role
@@ -57,6 +76,7 @@ serve(async (req) => {
         ticket_id: ticketId,
         qr_code: qrCode,
         payment_status: "pending",
+        picture_consent: consent,
       })
       .select()
       .single();
